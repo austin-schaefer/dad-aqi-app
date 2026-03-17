@@ -87,7 +87,9 @@ export function CitySearch() {
       <div className="relative">
         <input
           ref={inputRef}
-          type="text"
+          type="search"
+          autoComplete="off"
+          data-1p-ignore
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
