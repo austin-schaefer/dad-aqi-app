@@ -63,6 +63,15 @@ export default function App() {
           <span className="text-slate-600">Open-Meteo Air Quality API</span>
           {' · '}
           <span className="text-slate-600">Free, non-commercial</span>
+          {' · '}
+          <a
+            href="https://github.com/austin-schaefer/dad-aqi-app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-600 hover:text-slate-400 transition-colors"
+          >
+            GitHub
+          </a>
         </footer>
       </div>
     </div>
