@@ -5,10 +5,10 @@
   <!-- Smokestack body -->
   <rect x="14" y="19" width="5" height="9" rx="0.5" fill="#94a3b8"/>
   <!-- Rim at top of stack -->
-  <rect x="12" y="17" width="9" height="3" rx="1" fill="#94a3b8"/>
+  <rect x="12" y="17" width="9" height="3" rx="1" fill="#cbd5e1"/>
 
-  <!-- Smoke puffs, drifting up and right -->
-  <circle cx="15" cy="13" r="3.2" fill="#64748b" opacity="0.75"/>
-  <circle cx="19" cy="9.5" r="2.6" fill="#64748b" opacity="0.55"/>
-  <circle cx="16" cy="6.5" r="2" fill="#64748b" opacity="0.38"/>
+  <!-- Smoke puffs — use amber/sky from the app palette -->
+  <circle cx="15" cy="13" r="3.2" fill="#38bdf8" opacity="0.9"/>
+  <circle cx="19" cy="9.5" r="2.6" fill="#fb923c" opacity="0.85"/>
+  <circle cx="15" cy="6.2" r="2" fill="#facc15" opacity="0.8"/>
 </svg>
