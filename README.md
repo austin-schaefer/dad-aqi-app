@@ -1,6 +1,6 @@
-# dad-aqi-app
-
 Client-side React app for browsing Air Quality Index data across multiple cities. No backend — fetches directly from Open-Meteo's free API.
+
+🏭💨😷 See it live at [dad-aqi-app.netlify.app/](https://dad-aqi-app.netlify.app/).
 
 ## Development
 
