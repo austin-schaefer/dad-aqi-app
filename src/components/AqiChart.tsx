@@ -11,6 +11,7 @@ import {
 import { useAppStore } from '../store/appStore';
 import { getCityColor } from '../constants/aqi';
 import { getDateRange, generateDateAxis, formatDateShort, TIME_RANGES } from '../utils/dateHelpers';
+import { buildWeeklyWindows, collapseToWeekly } from '../utils/aggregation';
 import { ChartDataPoint } from '../types';
 import { AqiTooltip } from './AqiTooltip';
 
@@ -36,20 +37,41 @@ export function AqiChart() {
   if (!timeRange) return null;
 
   const { startDate, endDate } = getDateRange(timeRange.days);
-  const dateAxis = generateDateAxis(startDate, endDate);
+  const dailyAxis = generateDateAxis(startDate, endDate);
+  const useWeekly = timeRangeKey === '180d' || timeRangeKey === '365d';
 
-  const chartData: ChartDataPoint[] = dateAxis.map((date) => {
+  const weeklyWindows = useWeekly ? buildWeeklyWindows(dailyAxis) : null;
+  const chartAxis = weeklyWindows ? weeklyWindows.map((w) => w.representative) : dailyAxis;
+
+  const chartData: ChartDataPoint[] = chartAxis.map((date) => {
     const point: ChartDataPoint = { date };
     for (const city of cities) {
       const data = cityData[city.id];
       if (!data) { point[city.id] = null; continue; }
-      const entry = data.entries.find((e) => e.date === date);
-      point[city.id] = entry?.aqi ?? null;
+      if (weeklyWindows) {
+        // pre-collapsed below; look up by index
+        point[city.id] = null; // placeholder, filled after collapse
+      } else {
+        const entry = data.entries.find((e) => e.date === date);
+        point[city.id] = entry?.aqi ?? null;
+      }
     }
     return point;
   });
 
-  const tickInterval = Math.max(1, Math.floor(dateAxis.length / 7));
+  // For weekly view, collapse each city's data and fill into chartData
+  if (weeklyWindows) {
+    for (const city of cities) {
+      const data = cityData[city.id];
+      if (!data) continue;
+      const weekly = collapseToWeekly(data.entries, weeklyWindows);
+      weekly.forEach((entry, i) => {
+        if (chartData[i]) chartData[i]![city.id] = entry.aqi;
+      });
+    }
+  }
+
+  const tickInterval = Math.max(1, Math.floor(chartAxis.length / 7));
   const hasAnyData = cities.some((c) => cityData[c.id]);
   const isHighlighting = hoveredCityId !== null;
 

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:open-meteo.com)",
+      "WebFetch(domain:docs.openaq.org)",
+      "WebFetch(domain:www.iqair.com)",
+      "WebFetch(domain:docs.airnowapi.org)",
+      "WebFetch(domain:openaq.org)",
+      "WebFetch(domain:api.open-meteo.com)",
+      "WebFetch(domain:waqi.info)",
+      "WebFetch(domain:aqicn.org)",
+      "WebFetch(domain:api.openaq.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:explore.openaq.org)",
+      "WebFetch(domain:air-quality-api.open-meteo.com)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

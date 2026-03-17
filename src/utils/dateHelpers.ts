@@ -65,8 +65,10 @@ export function splitIntoQuarters(
 /** Generate an array of all ISO date strings in [startDate, endDate] inclusive */
 export function generateDateAxis(startDate: string, endDate: string): string[] {
   const dates: string[] = [];
-  const cur = new Date(startDate);
-  const end = new Date(endDate);
+  // Parse at noon local time to avoid UTC-midnight rolling back to the previous
+  // day in timezones behind UTC (e.g. Pacific UTC-8).
+  const cur = new Date(startDate + 'T12:00:00');
+  const end = new Date(endDate + 'T12:00:00');
 
   while (cur <= end) {
     dates.push(toIsoDate(cur));

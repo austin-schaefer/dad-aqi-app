@@ -39,6 +39,47 @@ export function aggregateHourlyToDaily(
 }
 
 /**
+ * Given a full daily date axis, group into 7-day windows and return each
+ * window as { dates, representative } where representative is the middle date.
+ * Used to build a weekly chart axis that is shared across all cities.
+ */
+export function buildWeeklyWindows(
+  dateAxis: string[],
+): Array<{ dates: string[]; representative: string }> {
+  const windows: Array<{ dates: string[]; representative: string }> = [];
+  for (let i = 0; i < dateAxis.length; i += 7) {
+    const chunk = dateAxis.slice(i, i + 7);
+    const mid = chunk[Math.floor(chunk.length / 2)]!;
+    windows.push({ dates: chunk, representative: mid });
+  }
+  return windows;
+}
+
+/**
+ * Collapse a city's daily entries into weekly averages aligned to the given
+ * windows (produced by buildWeeklyWindows). Returns one entry per window.
+ */
+export function collapseToWeekly(
+  entries: DailyAqiEntry[],
+  windows: Array<{ dates: string[]; representative: string }>,
+): DailyAqiEntry[] {
+  const byDate = new Map(entries.map((e) => [e.date, e.aqi]));
+
+  return windows.map(({ dates, representative }) => {
+    const values = dates
+      .map((d) => byDate.get(d))
+      .filter((v): v is number => v != null);
+
+    const aqi =
+      values.length > 0
+        ? Math.round(values.reduce((a, b) => a + b, 0) / values.length)
+        : null;
+
+    return { date: representative, aqi };
+  });
+}
+
+/**
  * Merge multiple DailyAqiEntry arrays (from quarterly chunks) into one
  * deduplicated, date-sorted array.
  */

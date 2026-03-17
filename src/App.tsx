@@ -42,10 +42,12 @@ export default function App() {
             <AqiChart />
           </div>
 
-          {/* Sidebar */}
-          <div className="w-64 shrink-0 flex flex-col gap-3">
+          {/* Sidebar — matches chart height, legend scrolls when overflow */}
+          <div className="w-64 shrink-0 flex flex-col gap-3" style={{ height: 420 }}>
             <CitySearch />
-            <AqiLegend />
+            <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
+              <AqiLegend />
+            </div>
           </div>
         </div>
 
