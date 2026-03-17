@@ -40,8 +40,3 @@ npm install -g netlify-cli
 netlify login
 netlify deploy --build --prod
 ```
-
-## Notes
-
-- `netlify.toml` includes a catch-all redirect (`/* → /index.html`) so deep-linking works correctly.
-- No environment variables or secrets needed — the app calls Open-Meteo directly from the browser.
