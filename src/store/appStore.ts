@@ -22,6 +22,7 @@ interface AppState {
   resetToDefaults: () => void;
   toggleCityVisibility: (cityId: string) => void;
   setHoveredCity: (cityId: string | null) => void;
+  reorderCities: (fromIndex: number, toIndex: number) => void;
 
   // Time range
   setTimeRange: (key: TimeRangeKey) => void;
@@ -77,6 +78,15 @@ export const useAppStore = create<AppState>()(
       },
 
       setHoveredCity: (cityId) => set({ hoveredCityId: cityId }),
+
+      reorderCities: (fromIndex, toIndex) => {
+        set((state) => {
+          const next = [...state.cities];
+          const [item] = next.splice(fromIndex, 1);
+          next.splice(toIndex, 0, item!);
+          return { cities: next };
+        });
+      },
 
       setTimeRange: (key) => {
         set({ timeRangeKey: key, cityData: {}, errorCities: {} });

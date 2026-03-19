@@ -5,10 +5,10 @@ import { DEFAULT_TIME_RANGE_KEY } from './dateHelpers';
 const CITIES_PARAM = 'cities';
 const RANGE_PARAM = 'range';
 
-/** True if the city list differs from the default five */
+/** True if the city list differs from defaults in content OR order */
 export function hasNonDefaultCities(cities: City[]): boolean {
   if (cities.length !== DEFAULT_CITIES.length) return true;
-  return cities.some((c) => !DEFAULT_CITIES.some((d) => d.id === c.id));
+  return cities.some((c, i) => c.id !== DEFAULT_CITIES[i]?.id);
 }
 
 /**
