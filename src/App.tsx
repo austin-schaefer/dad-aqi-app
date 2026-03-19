@@ -1,13 +1,37 @@
+import { useEffect } from 'react';
 import { useAqiData } from './hooks/useAqiData';
 import { AqiChart } from './components/AqiChart';
 import { AqiLegend } from './components/AqiLegend';
 import { AqiStatsTable } from './components/AqiStatsTable';
 import { CitySearch } from './components/CitySearch';
+import { ShareButton } from './components/ShareButton';
 import { StatusBar } from './components/StatusBar';
 import { TimeRangeSelector } from './components/TimeRangeSelector';
+import { useAppStore } from './store/appStore';
+import { decodeUrlState, syncUrlToState } from './utils/urlState';
 
 export default function App() {
   useAqiData();
+
+  const cities = useAppStore((s) => s.cities);
+  const timeRangeKey = useAppStore((s) => s.timeRangeKey);
+
+  // On first mount: apply any URL state over localStorage
+  useEffect(() => {
+    const { cities: urlCities, timeRangeKey: urlRange } = decodeUrlState();
+    const patch: Record<string, unknown> = {};
+    if (urlCities) patch.cities = urlCities;
+    if (urlRange) patch.timeRangeKey = urlRange;
+    if (Object.keys(patch).length > 0) {
+      useAppStore.setState({ ...patch, cityData: {}, errorCities: {} });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep URL in sync
+  useEffect(() => {
+    syncUrlToState(cities, timeRangeKey);
+  }, [cities, timeRangeKey]);
 
   return (
     <div className="min-h-screen bg-[#0b1120] text-slate-100" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -29,7 +53,11 @@ export default function App() {
           >
             AQI Dashboard
           </h1>
-          <TimeRangeSelector />
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <div className="w-px h-5 bg-white/10 mx-1" />
+            <TimeRangeSelector />
+          </div>
         </header>
 
         {/* Main layout: chart + sidebar */}
