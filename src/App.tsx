@@ -64,7 +64,7 @@ export default function App() {
         <div className="flex flex-col md:flex-row gap-5 items-start">
           {/* Chart */}
           <div
-            className="w-full md:flex-1 min-w-0 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-lg shadow-black/30 p-4 h-[280px] md:h-[420px]"
+            className="w-full md:flex-1 min-w-0 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-lg shadow-black/30 p-4 h-[320px] md:h-[420px]"
           >
             <AqiChart />
           </div>

@@ -76,7 +76,7 @@ export function AqiChart() {
   const isHighlighting = hoveredCityId !== null;
 
   return (
-    <div className="relative w-full h-full min-h-[320px]">
+    <div className="relative w-full h-full">
       {!hasAnyData && !isAnyLoading && (
         <div className="absolute inset-0 flex items-center justify-center">
           <p className="text-slate-600 font-mono text-sm">No data to display</p>
