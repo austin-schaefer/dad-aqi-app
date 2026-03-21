@@ -119,9 +119,9 @@ export function AqiStatsTable() {
                 {/* Low */}
                 <td className="px-3 py-2 sm:px-4 sm:py-3 text-right font-mono">
                   {stats ? (
-                    <span className="whitespace-nowrap">
+                    <span>
                       <span style={{ color: minCategory?.color ?? '#94a3b8' }}>{stats.min.aqi}</span>
-                      <span className="text-slate-600 text-xs ml-1">({formatDateShort(stats.min.date)})</span>
+                      <span className="text-slate-600 text-xs ml-1 whitespace-nowrap">({formatDateShort(stats.min.date)})</span>
                     </span>
                   ) : isLoading ? (
                     <span className="text-slate-600">…</span>
@@ -133,9 +133,9 @@ export function AqiStatsTable() {
                 {/* High */}
                 <td className="px-3 py-2 sm:px-4 sm:py-3 text-right font-mono">
                   {stats ? (
-                    <span className="whitespace-nowrap">
+                    <span>
                       <span style={{ color: maxCategory?.color ?? '#94a3b8' }}>{stats.max.aqi}</span>
-                      <span className="text-slate-600 text-xs ml-1">({formatDateShort(stats.max.date)})</span>
+                      <span className="text-slate-600 text-xs ml-1 whitespace-nowrap">({formatDateShort(stats.max.date)})</span>
                     </span>
                   ) : isLoading ? (
                     <span className="text-slate-600">…</span>
