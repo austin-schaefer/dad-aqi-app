@@ -46,14 +46,14 @@ export default function App() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6">
         {/* Header */}
-        <header className="flex items-center justify-between gap-4">
+        <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4">
           <h1
             className="text-2xl font-bold tracking-tight text-slate-100"
             style={{ fontFamily: "'Space Mono', monospace" }}
           >
             AQI Dashboard
           </h1>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <ShareButton />
             <div className="w-px h-5 bg-white/10 mx-1" />
             <TimeRangeSelector />
@@ -61,19 +61,18 @@ export default function App() {
         </header>
 
         {/* Main layout: chart + sidebar */}
-        <div className="flex gap-5 items-start">
+        <div className="flex flex-col md:flex-row gap-5 items-start">
           {/* Chart */}
           <div
-            className="flex-1 min-w-0 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-lg shadow-black/30 p-4"
-            style={{ height: 420 }}
+            className="w-full md:flex-1 min-w-0 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-lg shadow-black/30 p-4 h-[280px] md:h-[420px]"
           >
             <AqiChart />
           </div>
 
-          {/* Sidebar — matches chart height, legend scrolls when overflow */}
-          <div className="w-64 shrink-0 flex flex-col gap-3" style={{ height: 420 }}>
+          {/* Sidebar — on desktop matches chart height with scrolling legend */}
+          <div className="w-full md:w-64 md:shrink-0 flex flex-col gap-3 md:h-[420px]">
             <CitySearch />
-            <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
+            <div className="md:flex-1 md:min-h-0 md:overflow-y-auto pr-0.5">
               <AqiLegend />
             </div>
           </div>

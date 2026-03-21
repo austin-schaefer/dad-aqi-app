@@ -52,8 +52,8 @@ export function AqiStatsTable() {
   if (readyCities.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] overflow-hidden">
-      <table className="w-full text-sm">
+    <div className="rounded-xl border border-white/10 bg-white/[0.03] overflow-hidden overflow-x-auto">
+      <table className="w-full min-w-[420px] text-sm">
         <thead>
           <tr className="border-b border-white/8">
             <th className="text-left px-4 py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
