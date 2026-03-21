@@ -18,7 +18,7 @@ export function TimeRangeSelector() {
             key={key}
             onClick={() => setTimeRange(key)}
             className={[
-              'px-3 py-1.5 text-xs font-mono font-semibold rounded transition-all duration-150',
+              'px-2 sm:px-3 py-1.5 text-xs font-mono font-semibold rounded transition-all duration-150',
               'border',
               isActive
                 ? 'bg-amber-400/20 border-amber-400/60 text-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.2)]'
