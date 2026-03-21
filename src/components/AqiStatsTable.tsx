@@ -53,19 +53,19 @@ export function AqiStatsTable() {
 
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.03] overflow-hidden overflow-x-auto">
-      <table className="w-full min-w-[420px] text-sm">
+      <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-white/8">
-            <th className="text-left px-4 py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
+            <th className="text-left px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
               City
             </th>
-            <th className="text-right px-4 py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
+            <th className="text-right px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
               Mean
             </th>
-            <th className="text-right px-4 py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
+            <th className="text-right px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
               Low
             </th>
-            <th className="text-right px-4 py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
+            <th className="text-right px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-mono text-slate-500 uppercase tracking-widest font-normal">
               High
             </th>
           </tr>
@@ -88,7 +88,7 @@ export function AqiStatsTable() {
                 onMouseLeave={() => setHoveredCity(null)}
               >
                 {/* City */}
-                <td className="px-4 py-3">
+                <td className="px-3 py-2 sm:px-4 sm:py-3">
                   <div className="flex items-center gap-2.5">
                     <div
                       className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -104,7 +104,7 @@ export function AqiStatsTable() {
                 </td>
 
                 {/* Mean */}
-                <td className="px-4 py-3 text-right font-mono">
+                <td className="px-3 py-2 sm:px-4 sm:py-3 text-right font-mono whitespace-nowrap">
                   {isLoading ? (
                     <span className="text-slate-600">…</span>
                   ) : stats ? (
@@ -117,9 +117,9 @@ export function AqiStatsTable() {
                 </td>
 
                 {/* Low */}
-                <td className="px-4 py-3 text-right font-mono">
+                <td className="px-3 py-2 sm:px-4 sm:py-3 text-right font-mono">
                   {stats ? (
-                    <span>
+                    <span className="whitespace-nowrap">
                       <span style={{ color: minCategory?.color ?? '#94a3b8' }}>{stats.min.aqi}</span>
                       <span className="text-slate-600 text-xs ml-1">({formatDateShort(stats.min.date)})</span>
                     </span>
@@ -131,9 +131,9 @@ export function AqiStatsTable() {
                 </td>
 
                 {/* High */}
-                <td className="px-4 py-3 text-right font-mono">
+                <td className="px-3 py-2 sm:px-4 sm:py-3 text-right font-mono">
                   {stats ? (
-                    <span>
+                    <span className="whitespace-nowrap">
                       <span style={{ color: maxCategory?.color ?? '#94a3b8' }}>{stats.max.aqi}</span>
                       <span className="text-slate-600 text-xs ml-1">({formatDateShort(stats.max.date)})</span>
                     </span>

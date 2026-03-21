@@ -4,6 +4,14 @@ import { useAppStore } from '../store/appStore';
 
 const RANGE_KEYS: TimeRangeKey[] = ['7d', '30d', '90d', '180d', '365d'];
 
+const SHORT_LABELS: Record<TimeRangeKey, string> = {
+  '7d': '7D',
+  '30d': '30D',
+  '90d': '90D',
+  '180d': '6M',
+  '365d': '1Y',
+};
+
 export function TimeRangeSelector() {
   const timeRangeKey = useAppStore((s) => s.timeRangeKey);
   const setTimeRange = useAppStore((s) => s.setTimeRange);
@@ -25,7 +33,8 @@ export function TimeRangeSelector() {
                 : 'bg-white/5 border-white/10 text-slate-400 hover:border-amber-400/30 hover:text-slate-200',
             ].join(' ')}
           >
-            {range?.label ?? key}
+            <span className="sm:hidden">{SHORT_LABELS[key]}</span>
+            <span className="hidden sm:inline">{range?.label ?? key}</span>
           </button>
         );
       })}
