@@ -18,43 +18,55 @@ export function AqiLegend() {
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 
   // Drag state
-  const dragIndexRef = useRef<number | null>(null);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  // insertionIndex: 0..cities.length — the gap where the item will be dropped
-  const [insertionIndex, setInsertionIndex] = useState<number | null>(null);
+  const dragIndexRef = useRef<number | null>(null); // original store index of dragged city
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  // liveOrder: array of original store indices in current display order during drag
+  const [liveOrder, setLiveOrder] = useState<number[] | null>(null);
 
   function handleDragStart(e: React.DragEvent, index: number) {
     dragIndexRef.current = index;
-    setDraggingIndex(index);
+    setDraggingId(cities[index]!.id);
+    setLiveOrder(cities.map((_, i) => i));
     e.dataTransfer.effectAllowed = 'move';
   }
 
-  function handleDragOver(e: React.DragEvent, index: number) {
+  function handleDragOver(e: React.DragEvent, hoverIdx: number) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    if (dragIndexRef.current === null || !liveOrder) return;
+
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const inTopHalf = e.clientY < rect.top + rect.height / 2;
-    setInsertionIndex(inTopHalf ? index : index + 1);
+    const targetInsert = inTopHalf ? hoverIdx : hoverIdx + 1;
+
+    const currentPos = liveOrder.indexOf(dragIndexRef.current);
+    // Adjust for the removal of the dragged item shifting indices
+    let insertAt = targetInsert;
+    if (currentPos < insertAt) insertAt--;
+    if (insertAt === currentPos) return;
+
+    const newOrder = [...liveOrder];
+    newOrder.splice(currentPos, 1);
+    newOrder.splice(insertAt, 0, dragIndexRef.current);
+    setLiveOrder(newOrder);
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     const from = dragIndexRef.current;
-    if (from !== null && insertionIndex !== null) {
-      // When moving down, the removal of `from` shifts everything above the
-      // insertion point down by one, so subtract 1 to compensate.
-      const to = from < insertionIndex ? insertionIndex - 1 : insertionIndex;
+    if (from !== null && liveOrder) {
+      const to = liveOrder.indexOf(from);
       if (to !== from) reorderCities(from, to);
     }
     dragIndexRef.current = null;
-    setDraggingIndex(null);
-    setInsertionIndex(null);
+    setDraggingId(null);
+    setLiveOrder(null);
   }
 
   function handleDragEnd() {
     dragIndexRef.current = null;
-    setDraggingIndex(null);
-    setInsertionIndex(null);
+    setDraggingId(null);
+    setLiveOrder(null);
   }
 
   function handleRemove(cityId: string) {
@@ -88,17 +100,14 @@ export function AqiLegend() {
         )}
       </div>
 
-      {/* Insertion line before first item */}
-      <InsertionLine visible={insertionIndex === 0} />
-
-      {cities.map((city, index) => {
+      {(liveOrder ? liveOrder.map(i => cities[i]!) : cities).map((city, index) => {
         const color = getCityColor(index);
         const data = cityData[city.id];
         const isLoading = loadingCities.has(city.id);
         const error = errorCities[city.id];
         const isHidden = hiddenCities.has(city.id);
         const isPendingRemove = confirmRemoveId === city.id;
-        const isBeingDragged = draggingIndex === index;
+        const isBeingDragged = city.id === draggingId;
 
         let latestAqi: number | null = null;
         if (data) {
@@ -195,8 +204,6 @@ export function AqiLegend() {
               )}
             </div>
 
-            {/* Insertion line after this item */}
-            <InsertionLine visible={insertionIndex === index + 1} />
           </div>
         );
       })}
@@ -205,11 +212,5 @@ export function AqiLegend() {
         <div className="text-xs text-slate-500 text-center py-4">No cities added. Search above to add one.</div>
       )}
     </div>
-  );
-}
-
-function InsertionLine({ visible }: { visible: boolean }) {
-  return (
-    <div className={['h-0.5 rounded-full mx-1 transition-all duration-100', visible ? 'bg-amber-400 opacity-100' : 'opacity-0'].join(' ')} />
   );
 }
