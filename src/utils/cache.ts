@@ -1,7 +1,7 @@
 import { CachedEntry, DailyAqiEntry } from '../types';
 
 const CACHE_KEY = 'aqi_cache';
-const TTL_MS = 60 * 60 * 1000; // 1 hour
+const TTL_MS = 60 * 60 * 1000; // 1 hour (online refresh threshold)
 
 function loadCache(): Record<string, CachedEntry> {
   try {
@@ -36,6 +36,10 @@ export function readCache(
     const entry = cache[key];
 
     if (!entry) return null;
+
+    // When offline, return whatever we have — stale data beats no data
+    if (!navigator.onLine) return entry.entries;
+
     if (Date.now() - entry.fetchedAt > TTL_MS) return null;
 
     return entry.entries;
@@ -61,6 +65,9 @@ export function writeCache(
 }
 
 export function clearExpiredCache(): void {
+  // Don't evict data when offline — stale data is still useful
+  if (!navigator.onLine) return;
+
   try {
     const cache = loadCache();
     const now = Date.now();
