@@ -59,7 +59,7 @@ export function decodeUrlState(): UrlState {
 
     // Time range
     const rawRange = params.get(RANGE_PARAM);
-    const validRanges: TimeRangeKey[] = ['7d', '30d', '90d', '180d', '365d'];
+    const validRanges: TimeRangeKey[] = ['24h', '7d', '30d', '90d', '180d', '365d'];
     const timeRangeKey = validRanges.includes(rawRange as TimeRangeKey)
       ? (rawRange as TimeRangeKey)
       : null;

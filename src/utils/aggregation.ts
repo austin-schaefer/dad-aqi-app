@@ -80,6 +80,28 @@ export function collapseToWeekly(
 }
 
 /**
+ * Extract hourly entries from Open-Meteo data at or after cutoffDatetime.
+ * Stores each hour as a DailyAqiEntry where `date` is "YYYY-MM-DDTHH:00".
+ */
+export function extractHourlyEntries(
+  times: string[],
+  values: (number | null)[],
+  cutoffDatetime: string,
+): DailyAqiEntry[] {
+  const entries: DailyAqiEntry[] = [];
+  for (let i = 0; i < times.length; i++) {
+    const timeStr = times[i];
+    if (!timeStr) continue;
+    // Normalize to "YYYY-MM-DDTHH:00" (API returns "YYYY-MM-DDTHH:MM")
+    const dt = timeStr.slice(0, 13) + ':00';
+    if (dt < cutoffDatetime) continue;
+    const val = values[i];
+    entries.push({ date: dt, aqi: val !== null && val !== undefined ? val : null });
+  }
+  return entries;
+}
+
+/**
  * Merge multiple DailyAqiEntry arrays (from quarterly chunks) into one
  * deduplicated, date-sorted array.
  */

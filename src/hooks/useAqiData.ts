@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useAppStore } from '../store/appStore';
-import { fetchAqiForCity } from '../api/airQuality';
+import { fetchAqiForCity, fetchAqiHourlyForCity } from '../api/airQuality';
 import { readCache, writeCache, clearExpiredCache } from '../utils/cache';
-import { getDateRange, TIME_RANGES } from '../utils/dateHelpers';
+import { getDateRange, getHourlyDateRange, TIME_RANGES } from '../utils/dateHelpers';
 
 export function useAqiData(): void {
   const cities = useAppStore((s) => s.cities);
@@ -21,7 +21,15 @@ export function useAqiData(): void {
     const timeRange = TIME_RANGES[timeRangeKey];
     if (!timeRange) return;
 
-    const { startDate, endDate } = getDateRange(timeRange.days);
+    const is24h = timeRangeKey === '24h';
+    const hourlyRange = is24h ? getHourlyDateRange() : null;
+    const { startDate, endDate } = is24h
+      ? { startDate: hourlyRange!.startDate, endDate: hourlyRange!.endDate }
+      : getDateRange(timeRange.days);
+    // For 24h mode use the hourly cutoff datetimes as cache key bounds
+    const cacheStart = is24h ? hourlyRange!.cutoffDatetime : startDate;
+    const cacheEnd = is24h ? hourlyRange!.endDatetime : endDate;
+
     let cancelled = false;
 
     const run = async () => {
@@ -37,7 +45,7 @@ export function useAqiData(): void {
         if (inFlightRef.current.has(fetchKey)) continue;
         if (state.cityData[city.id]) continue;
 
-        const cached = readCache(city.id, startDate, endDate);
+        const cached = readCache(city.id, cacheStart, cacheEnd);
         if (cached) {
           setCityData({ cityId: city.id, entries: cached });
           continue;
@@ -48,9 +56,17 @@ export function useAqiData(): void {
         setCityError(city.id, null);
 
         try {
-          const entries = await fetchAqiForCity(city.lat, city.lon, startDate, endDate);
+          const entries = is24h
+            ? await fetchAqiHourlyForCity(
+                city.lat,
+                city.lon,
+                startDate,
+                endDate,
+                hourlyRange!.cutoffDatetime,
+              )
+            : await fetchAqiForCity(city.lat, city.lon, startDate, endDate);
           if (!cancelled) {
-            writeCache(city.id, startDate, endDate, entries);
+            writeCache(city.id, cacheStart, cacheEnd, entries);
             setCityData({ cityId: city.id, entries });
           }
         } catch (err) {
