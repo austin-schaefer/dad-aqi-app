@@ -1,6 +1,6 @@
 import { useAppStore } from '../store/appStore';
 import { getCityColor, getAqiCategory } from '../constants/aqi';
-import { getDateRange, TIME_RANGES, formatDateShort } from '../utils/dateHelpers';
+import { getDateRange, getHourlyDateRange, TIME_RANGES, formatDateShort, formatHourShort } from '../utils/dateHelpers';
 import { DailyAqiEntry } from '../types';
 
 interface CityStats {
@@ -44,7 +44,12 @@ export function AqiStatsTable() {
   const timeRange = TIME_RANGES[timeRangeKey];
   if (!timeRange) return null;
 
-  const { startDate, endDate } = getDateRange(timeRange.days);
+  const is24h = timeRangeKey === '24h';
+  const hourlyRange = is24h ? getHourlyDateRange() : null;
+  const { startDate, endDate } = is24h
+    ? { startDate: hourlyRange!.cutoffDatetime, endDate: hourlyRange!.endDatetime }
+    : getDateRange(timeRange.days);
+  const formatLabel = is24h ? formatHourShort : formatDateShort;
 
   const visibleCities = cities.filter((c) => !hiddenCities.has(c.id));
   const readyCities = visibleCities.filter((c) => cityData[c.id]);
@@ -121,7 +126,7 @@ export function AqiStatsTable() {
                   {stats ? (
                     <span>
                       <span style={{ color: minCategory?.color ?? '#94a3b8' }}>{stats.min.aqi}</span>
-                      <span className="text-slate-600 text-xs ml-1 whitespace-nowrap">({formatDateShort(stats.min.date)})</span>
+                      <span className="text-slate-600 text-xs ml-1 whitespace-nowrap">({formatLabel(stats.min.date)})</span>
                     </span>
                   ) : isLoading ? (
                     <span className="text-slate-600">…</span>
@@ -135,7 +140,7 @@ export function AqiStatsTable() {
                   {stats ? (
                     <span>
                       <span style={{ color: maxCategory?.color ?? '#94a3b8' }}>{stats.max.aqi}</span>
-                      <span className="text-slate-600 text-xs ml-1 whitespace-nowrap">({formatDateShort(stats.max.date)})</span>
+                      <span className="text-slate-600 text-xs ml-1 whitespace-nowrap">({formatLabel(stats.max.date)})</span>
                     </span>
                   ) : isLoading ? (
                     <span className="text-slate-600">…</span>

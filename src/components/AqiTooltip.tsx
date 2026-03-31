@@ -1,7 +1,7 @@
 import { TooltipProps } from 'recharts';
 import { useAppStore } from '../store/appStore';
 import { getCityColor, getAqiCategory } from '../constants/aqi';
-import { formatDateLong } from '../utils/dateHelpers';
+import { formatDateLong, formatHourLong } from '../utils/dateHelpers';
 
 type RechartsPayload = {
   dataKey: string;
@@ -19,7 +19,9 @@ export function AqiTooltip({ active, payload, label }: TooltipProps<number, stri
   return (
     <div className="bg-slate-900/95 border border-white/15 rounded-lg shadow-xl shadow-black/60 p-3 min-w-[180px]">
       <div className="text-xs font-mono text-slate-400 mb-2 border-b border-white/10 pb-2">
-        {formatDateLong(label as string)}
+        {(label as string).includes('T')
+          ? formatHourLong(label as string)
+          : formatDateLong(label as string)}
       </div>
       <div className="flex flex-col gap-1.5">
         {(payload as RechartsPayload[])

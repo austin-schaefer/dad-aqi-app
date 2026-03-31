@@ -10,7 +10,14 @@ import {
 } from 'recharts';
 import { useAppStore } from '../store/appStore';
 import { getCityColor } from '../constants/aqi';
-import { getDateRange, generateDateAxis, formatDateShort, TIME_RANGES } from '../utils/dateHelpers';
+import {
+  getDateRange,
+  generateDateAxis,
+  generateHourlyAxis,
+  formatDateShort,
+  formatHourShort,
+  TIME_RANGES,
+} from '../utils/dateHelpers';
 import { buildWeeklyWindows, collapseToWeekly } from '../utils/aggregation';
 import { ChartDataPoint } from '../types';
 import { AqiTooltip } from './AqiTooltip';
@@ -36,12 +43,20 @@ export function AqiChart() {
 
   if (!timeRange) return null;
 
-  const { startDate, endDate } = getDateRange(timeRange.days);
-  const dailyAxis = generateDateAxis(startDate, endDate);
-  const useWeekly = timeRangeKey === '180d' || timeRangeKey === '365d';
+  const is24h = timeRangeKey === '24h';
 
-  const weeklyWindows = useWeekly ? buildWeeklyWindows(dailyAxis) : null;
-  const chartAxis = weeklyWindows ? weeklyWindows.map((w) => w.representative) : dailyAxis;
+  let chartAxis: string[];
+  let weeklyWindows: ReturnType<typeof buildWeeklyWindows> | null = null;
+
+  if (is24h) {
+    chartAxis = generateHourlyAxis();
+  } else {
+    const { startDate, endDate } = getDateRange(timeRange.days);
+    const dailyAxis = generateDateAxis(startDate, endDate);
+    const useWeekly = timeRangeKey === '180d' || timeRangeKey === '365d';
+    weeklyWindows = useWeekly ? buildWeeklyWindows(dailyAxis) : null;
+    chartAxis = weeklyWindows ? weeklyWindows.map((w) => w.representative) : dailyAxis;
+  }
 
   const chartData: ChartDataPoint[] = chartAxis.map((date) => {
     const point: ChartDataPoint = { date };
@@ -71,7 +86,8 @@ export function AqiChart() {
     }
   }
 
-  const tickInterval = Math.max(1, Math.floor(chartAxis.length / 7));
+  // For 24h: show a tick every 3 hours; for daily views space evenly across ~7 labels
+  const tickInterval = is24h ? 3 : Math.max(1, Math.floor(chartAxis.length / 7));
   const hasAnyData = cities.some((c) => cityData[c.id]);
   const isHighlighting = hoveredCityId !== null;
 
@@ -102,7 +118,7 @@ export function AqiChart() {
             tickLine={false}
             axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
             interval={tickInterval}
-            tickFormatter={formatDateShort}
+            tickFormatter={is24h ? formatHourShort : formatDateShort}
           />
 
           <YAxis

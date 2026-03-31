@@ -7,7 +7,7 @@ export interface City {
   admin1?: string; // state/province
 }
 
-export type TimeRangeKey = '7d' | '30d' | '90d' | '180d' | '365d';
+export type TimeRangeKey = '24h' | '7d' | '30d' | '90d' | '180d' | '365d';
 
 export interface TimeRange {
   key: TimeRangeKey;

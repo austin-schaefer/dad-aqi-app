@@ -2,9 +2,10 @@ import { TIME_RANGES } from '../utils/dateHelpers';
 import { TimeRangeKey } from '../types';
 import { useAppStore } from '../store/appStore';
 
-const RANGE_KEYS: TimeRangeKey[] = ['7d', '30d', '90d', '180d', '365d'];
+const RANGE_KEYS: TimeRangeKey[] = ['24h', '7d', '30d', '90d', '180d', '365d'];
 
 const SHORT_LABELS: Record<TimeRangeKey, string> = {
+  '24h': '24H',
   '7d': '7D',
   '30d': '30D',
   '90d': '90D',

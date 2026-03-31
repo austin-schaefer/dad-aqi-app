@@ -1,6 +1,6 @@
 import { OpenMeteoAirQualityResponse, DailyAqiEntry } from '../types';
 import { splitIntoQuarters } from '../utils/dateHelpers';
-import { aggregateHourlyToDaily, mergeChunks } from '../utils/aggregation';
+import { aggregateHourlyToDaily, extractHourlyEntries, mergeChunks } from '../utils/aggregation';
 
 const BASE_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality';
 
@@ -27,6 +27,36 @@ async function fetchChunk(
 
   const data: OpenMeteoAirQualityResponse = await res.json();
   return aggregateHourlyToDaily(data.hourly.time, data.hourly.us_aqi);
+}
+
+/**
+ * Fetch last-24-hours hourly AQI data for a city.
+ * Returns one DailyAqiEntry per hour with `date` as "YYYY-MM-DDTHH:00".
+ */
+export async function fetchAqiHourlyForCity(
+  lat: number,
+  lon: number,
+  startDate: string,
+  endDate: string,
+  cutoffDatetime: string,
+): Promise<DailyAqiEntry[]> {
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    hourly: 'us_aqi',
+    start_date: startDate,
+    end_date: endDate,
+    timezone: 'auto',
+  });
+
+  const res = await fetch(`${BASE_URL}?${params.toString()}`);
+
+  if (!res.ok) {
+    throw new Error(`Open-Meteo AQ returned ${res.status} for ${startDate}–${endDate}`);
+  }
+
+  const data: OpenMeteoAirQualityResponse = await res.json();
+  return extractHourlyEntries(data.hourly.time, data.hourly.us_aqi, cutoffDatetime);
 }
 
 /**
